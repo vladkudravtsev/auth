@@ -17,14 +17,11 @@ type App struct {
 }
 
 func New(db *gorm.DB, log *slog.Logger, cfg *config.Config) *App {
-	// HTTP Server
 	db.AutoMigrate(&models.Product{})
 
 	productService := product.NewService(db, log)
-	httpServer := httpapp.New(productService, cfg.HTTPServer.Address, cfg.AppSecret)
-	httpServer.RegisterHandlers()
 
-	//TODO Implement GRPC Server
+	httpServer := httpapp.New(productService, cfg, log)
 	grpcServer := grpcapp.New(productService, log, &cfg.GRPCServer)
 
 	return &App{

@@ -15,7 +15,7 @@ import (
 )
 
 type App struct {
-	GRPCServer *grpc.Server
+	gRPCServer *grpc.Server
 	address    int
 	log        *slog.Logger
 }
@@ -36,7 +36,7 @@ func New(product product.Service, log *slog.Logger, cfg *config.GRPCServer) *App
 	productgrpc.RegisterServer(gRPCServer, product)
 
 	return &App{
-		GRPCServer: gRPCServer,
+		gRPCServer: gRPCServer,
 		address:    cfg.Port,
 		log:        log,
 	}
@@ -54,7 +54,7 @@ func (a *App) Run() error {
 
 	log.Info("gRPC server is running", slog.String("port", l.Addr().String()))
 
-	if err := a.GRPCServer.Serve(l); err != nil {
+	if err := a.gRPCServer.Serve(l); err != nil {
 		return fmt.Errorf("%s: %w", fn, err)
 	}
 
@@ -68,5 +68,13 @@ func (a *App) MustRun() {
 }
 
 func (a *App) Stop() {
+	const fn = "grpcapp.stop"
 
+	log := a.log.With(slog.String("fn", fn))
+
+	log.Info("stopping gRPC server", slog.Int("port", a.address))
+
+	a.gRPCServer.GracefulStop()
+
+	log.Info("grpc server stopped")
 }

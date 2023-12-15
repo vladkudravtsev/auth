@@ -1,172 +1,63 @@
 package httpapp
 
 import (
-	"local/gorm-example/internal/lib/jwt"
+	"context"
+	"fmt"
+	"local/gorm-example/internal/config"
 	"local/gorm-example/internal/services/product"
-	"local/gorm-example/internal/services/product/models"
+	producthttp "local/gorm-example/internal/services/product/http"
+	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type App struct {
-	httpServer     *gin.Engine
-	address        string
-	productService product.Service
-	secret         string
+	httpServer *http.Server
+	address    string
+	secret     string
+	log        *slog.Logger
 }
 
-type productResponse struct {
-	ID    uint   `json:"id"`
-	Code  string `json:"code"`
-	Price uint   `json:"price"`
-}
-
-type productCreateRequest struct {
-	Code  string `json:"code" binding:"required"`
-	Price uint   `json:"price" binding:"required"`
-}
-
-type productUpdateRequest struct {
-	Code  string `json:"code"`
-	Price uint   `json:"price"`
-}
-
-type productParams struct {
-	ID uint `uri:"id" binding:"required"`
-}
-
-func New(productService product.Service, address, secret string) *App {
+func New(productService product.Service, cfg *config.Config, log *slog.Logger) *App {
 	router := gin.Default()
 
-	return &App{
-		httpServer:     router,
-		address:        address,
-		productService: productService,
-		secret:         secret,
-	}
-}
+	httpServer := producthttp.New(router, productService, cfg)
 
-func (a *App) RegisterHandlers() {
-	a.httpServer.Use(a.jwtTokenCheck)
-	a.httpServer.GET("/products", a.list)
-	a.httpServer.GET("/products/:id", a.findOne)
-	a.httpServer.POST("/products", a.create)
-	a.httpServer.DELETE("/products/:id", a.delete)
-	a.httpServer.PATCH("/products/:id", a.update)
+	return &App{
+		httpServer: httpServer,
+		address:    cfg.HTTPServer.Address,
+		secret:     cfg.AppSecret,
+		log:        log,
+	}
 }
 
 func (a *App) MustRun() {
-	if err := a.httpServer.Run(a.address); err != nil {
-		panic(err)
+	const fn = "httpapp.MustRun"
+
+	log := a.log.With("fn", fn)
+	log.Info("http server is running", slog.String("address", a.address))
+
+	if err := a.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		panic(fmt.Errorf("%s: %w", fn, err))
 	}
+
 }
 
-func (a *App) list(c *gin.Context) {
-	products, err := a.productService.List()
+func (a *App) Stop() {
+	const fn = "httpapp.Stop"
 
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H{"message": err})
+	log := a.log.With(slog.String("fn", fn))
+	log.Info("stopping http server")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := a.httpServer.Shutdown(ctx); err != nil {
+		log.Error("failed to stop http server", slog.Any("err", err))
 		return
 	}
 
-	var response []*productResponse
-
-	for _, product := range products {
-		response = append(response, toProductResponse(product))
-	}
-
-	c.JSON(http.StatusOK, response)
-}
-
-func (a *App) findOne(c *gin.Context) {
-	var params productParams
-
-	if err := c.ShouldBindUri(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-	}
-
-	product, err := a.productService.GetOne(params.ID)
-
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H{"message": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, toProductResponse(*product))
-}
-
-func (a *App) create(c *gin.Context) {
-	var body productCreateRequest
-
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-
-	if err := a.productService.Create(&models.Product{
-		Price: body.Price,
-		Code:  body.Code,
-	}); err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H{"message": err.Error()})
-		return
-	}
-
-	c.AbortWithStatus(http.StatusCreated)
-}
-
-func (a *App) delete(c *gin.Context) {
-	var params productParams
-
-	if err := c.ShouldBindUri(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-
-	if err := a.productService.Delete(params.ID); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-
-	c.AbortWithStatus(http.StatusOK)
-}
-
-func (a *App) update(c *gin.Context) {
-	var params productParams
-	var body productUpdateRequest
-
-	if err := c.ShouldBindUri(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-
-	if err := a.productService.Update(params.ID, &models.Product{
-		Price: body.Price,
-		Code:  body.Code,
-	}); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-
-	c.AbortWithStatus(http.StatusOK)
-}
-
-func (a *App) jwtTokenCheck(c *gin.Context) {
-	if err := jwt.ValidateToken(c.Request.Header.Get("Authorization"), a.secret); err != nil {
-		c.AbortWithStatus(http.StatusUnauthorized)
-		return
-	}
-}
-
-func toProductResponse(product models.Product) *productResponse {
-	return &productResponse{
-		ID:    product.ID,
-		Price: product.Price,
-		Code:  product.Code,
-	}
+	log.Info("http server stopped")
 }

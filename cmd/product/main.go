@@ -7,6 +7,8 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -20,8 +22,16 @@ func main() {
 
 	productApp := app.New(db, log, cfg)
 
-	// productApp.HTTPServer.MustRun()
-	productApp.GRPCServer.MustRun()
+	go productApp.HTTPServer.MustRun()
+	go productApp.GRPCServer.MustRun()
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	<-stop
+
+	productApp.GRPCServer.Stop()
+	productApp.HTTPServer.Stop()
 }
 
 func setupLogger(env string) *slog.Logger {
