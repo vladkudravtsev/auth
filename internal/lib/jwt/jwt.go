@@ -37,13 +37,13 @@ func NewToken(claims *Claims, secret string, duration time.Duration) (string, er
 	return signedString, nil
 }
 
-func ValidateToken(bearerToken, secret string) error {
+func ValidateToken(bearerToken, secret string) (*Claims, error) {
 	const fn = "lib.jwt.ValidateToken"
 
 	splittedToken := strings.Split(bearerToken, " ")
 
 	if len(splittedToken) != 2 {
-		return fmt.Errorf("%s: %w", fn, errors.New("invalid bearer token"))
+		return nil, fmt.Errorf("%s: %w", fn, errors.New("invalid bearer token"))
 	}
 
 	var claims Claims
@@ -53,8 +53,8 @@ func ValidateToken(bearerToken, secret string) error {
 	})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &claims, nil
 }

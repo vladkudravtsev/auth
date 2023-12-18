@@ -2,7 +2,9 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -52,6 +54,24 @@ func MustLoad() *Config {
 
 	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
 		log.Fatalf("envs not loaded: %s", err)
+	}
+
+	return &cfg
+}
+
+func LoadFromPath(path string) *Config {
+	var cfg Config
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		fmt.Println(err)
+		if err := cleanenv.ReadEnv(&cfg); err != nil {
+			log.Fatalf("envs not loaded: %s", err)
+		}
+		return &cfg
+	}
+
+	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
+		log.Fatalf("file envs not loaded: %s", err)
 	}
 
 	return &cfg

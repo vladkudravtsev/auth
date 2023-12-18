@@ -9,7 +9,7 @@ import (
 
 func New(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if err := jwt.ValidateToken(c.Request.Header.Get("Authorization"), secret); err != nil {
+		if _, err := jwt.ValidateToken(c.Request.Header.Get("Authorization"), secret); err != nil {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
