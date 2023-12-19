@@ -40,6 +40,7 @@ func (s *Suite) SetupSuite() {
 		panic("failed to connect database")
 	}
 	s.db = db
+	db.AutoMigrate(&models.User{}, &models.App{})
 
 	authService := NewService(db, log, cfg.Auth.TokenTTL)
 	s.auth = authService
@@ -59,12 +60,12 @@ func TestRegisterSuite(t *testing.T) {
 }
 
 func (s *Suite) TearDownSuite() {
-	s.db.Exec("TRUNCATE users")
-	s.db.Exec("TRUNCATE apps")
+	s.db.Unscoped().Delete(&models.App{}, appID)
+	s.db.Unscoped().Where("email = ?", email).Delete(&models.User{})
 }
 
 func (s *Suite) SetupTest() {
-	s.db.Exec("TRUNCATE users")
+	s.db.Unscoped().Where("email = ?", email).Delete(&models.User{})
 }
 
 func (s *Suite) TestRegister() {

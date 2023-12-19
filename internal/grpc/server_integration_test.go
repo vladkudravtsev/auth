@@ -51,6 +51,7 @@ func (s *Suite) SetupSuite() {
 		panic("failed to connect database")
 	}
 	s.db = db
+	db.AutoMigrate(&models.User{}, &models.App{})
 
 	lis := bufconn.Listen(bufSize)
 	baseServer := grpc.NewServer()
@@ -90,12 +91,12 @@ func (s *Suite) SetupSuite() {
 }
 
 func (s *Suite) TearDownSuite() {
-	s.db.Exec("TRUNCATE users")
-	s.db.Exec("TRUNCATE apps")
+	s.db.Unscoped().Delete(&models.App{}, appID)
+	s.db.Unscoped().Where("email = ?", user.Email).Delete(&models.User{})
 }
 
 func (s *Suite) SetupTest() {
-	s.db.Exec("TRUNCATE users")
+	s.db.Unscoped().Where("email = ?", user.Email).Delete(&models.User{})
 }
 
 func TestRegisterSuite(t *testing.T) {

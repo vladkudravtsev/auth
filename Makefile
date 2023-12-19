@@ -6,9 +6,11 @@ proto:
 		--go-grpc_opt=paths=source_relative \
 		--validate_out="lang=go,paths=source_relative:./api/gen/go" \
 		-I ./api/proto/validate/validate.proto
-
-.PHONY: cover
-cover:
-	go test -short -count=1 -race -coverpofile=coverage.out ./...
-	go tool cover -html=coverage.out
-	rm coverage.out
+.PHONY: test-ci
+test-ci:
+	@docker compose -f test/docker-compose.yml down -v
+	@docker compose -f test/docker-compose.yml up --build --abort-on-container-exit --remove-orphans --force-recreate
+	@docker compose -f test/docker-compose.yml down -v
+.PHONY: test
+test:
+	go test ./...
