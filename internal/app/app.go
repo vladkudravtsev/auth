@@ -1,12 +1,13 @@
 package app
 
 import (
-	grpcapp "local/gorm-example/internal/app/grpc"
-	httpapp "local/gorm-example/internal/app/http"
-	"local/gorm-example/internal/config"
-	"local/gorm-example/internal/models"
-	"local/gorm-example/internal/services/auth"
 	"log/slog"
+
+	grpcapp "github.com/vladkudravtsev/auth/internal/app/grpc"
+	httpapp "github.com/vladkudravtsev/auth/internal/app/http"
+	"github.com/vladkudravtsev/auth/internal/config"
+	"github.com/vladkudravtsev/auth/internal/models"
+	"github.com/vladkudravtsev/auth/internal/services/auth"
 
 	"gorm.io/gorm"
 )

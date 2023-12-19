@@ -2,16 +2,18 @@ package authgrpc_test
 
 import (
 	"context"
-	authv1 "local/gorm-example/api/gen/go/auth"
-	"local/gorm-example/internal/config"
-	"local/gorm-example/internal/database"
-	"local/gorm-example/internal/lib/slogdiscard"
-	"local/gorm-example/internal/services/auth"
 
-	authgrpc "local/gorm-example/internal/grpc"
-	"local/gorm-example/internal/models"
+	authv1 "github.com/vladkudravtsev/auth/api/gen/go/auth"
+	"github.com/vladkudravtsev/auth/internal/config"
+	"github.com/vladkudravtsev/auth/internal/database"
+	"github.com/vladkudravtsev/auth/internal/lib/slogdiscard"
+	"github.com/vladkudravtsev/auth/internal/services/auth"
+
 	"log/slog"
 	"net"
+
+	authgrpc "github.com/vladkudravtsev/auth/internal/grpc"
+	"github.com/vladkudravtsev/auth/internal/models"
 
 	"testing"
 

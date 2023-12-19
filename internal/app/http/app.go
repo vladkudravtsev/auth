@@ -3,13 +3,14 @@ package httpapp
 import (
 	"context"
 	"fmt"
-	"local/gorm-example/internal/config"
-	authhttp "local/gorm-example/internal/http"
-	"local/gorm-example/internal/services/auth"
 	"log"
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/vladkudravtsev/auth/internal/config"
+	authhttp "github.com/vladkudravtsev/auth/internal/http"
+	"github.com/vladkudravtsev/auth/internal/services/auth"
 
 	"github.com/gin-gonic/gin"
 )

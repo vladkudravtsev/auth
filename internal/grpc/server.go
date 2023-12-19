@@ -5,8 +5,8 @@ import (
 	"errors"
 	"log/slog"
 
-	authv1 "local/gorm-example/api/gen/go/auth"
-	"local/gorm-example/internal/services/auth"
+	authv1 "github.com/vladkudravtsev/auth/api/gen/go/auth"
+	"github.com/vladkudravtsev/auth/internal/services/auth"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

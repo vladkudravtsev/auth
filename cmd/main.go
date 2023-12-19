@@ -1,14 +1,15 @@
 package main
 
 import (
-	"local/gorm-example/internal/app"
-	"local/gorm-example/internal/config"
-	"local/gorm-example/internal/database"
 	"log"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/vladkudravtsev/auth/internal/app"
+	"github.com/vladkudravtsev/auth/internal/config"
+	"github.com/vladkudravtsev/auth/internal/database"
 )
 
 func main() {

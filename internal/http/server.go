@@ -1,11 +1,12 @@
 package authhttp
 
 import (
-	"local/gorm-example/internal/config"
-	"local/gorm-example/internal/http/handlers/login"
-	"local/gorm-example/internal/http/handlers/register"
-	"local/gorm-example/internal/services/auth"
 	"net/http"
+
+	"github.com/vladkudravtsev/auth/internal/config"
+	"github.com/vladkudravtsev/auth/internal/http/handlers/login"
+	"github.com/vladkudravtsev/auth/internal/http/handlers/register"
+	"github.com/vladkudravtsev/auth/internal/services/auth"
 
 	"github.com/gin-gonic/gin"
 )

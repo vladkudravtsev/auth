@@ -2,9 +2,10 @@ package login
 
 import (
 	"errors"
-	"local/gorm-example/internal/lib/api/response"
-	"local/gorm-example/internal/services/auth"
 	"net/http"
+
+	"github.com/vladkudravtsev/auth/internal/lib/api/response"
+	"github.com/vladkudravtsev/auth/internal/services/auth"
 
 	"github.com/go-playground/validator/v10"
 

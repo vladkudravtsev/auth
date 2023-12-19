@@ -1,14 +1,15 @@
 package auth
 
 import (
-	"local/gorm-example/internal/config"
-	"local/gorm-example/internal/database"
-	"local/gorm-example/internal/lib/jwt"
-	"local/gorm-example/internal/lib/slogdiscard"
-	"local/gorm-example/internal/models"
 	"log/slog"
 	"testing"
 	"time"
+
+	"github.com/vladkudravtsev/auth/internal/config"
+	"github.com/vladkudravtsev/auth/internal/database"
+	"github.com/vladkudravtsev/auth/internal/lib/jwt"
+	"github.com/vladkudravtsev/auth/internal/lib/slogdiscard"
+	"github.com/vladkudravtsev/auth/internal/models"
 
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"

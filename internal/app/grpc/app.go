@@ -2,11 +2,12 @@ package grpcapp
 
 import (
 	"fmt"
-	"local/gorm-example/internal/config"
-	authgrpc "local/gorm-example/internal/grpc"
-	"local/gorm-example/internal/services/auth"
 	"log/slog"
 	"net"
+
+	"github.com/vladkudravtsev/auth/internal/config"
+	authgrpc "github.com/vladkudravtsev/auth/internal/grpc"
+	"github.com/vladkudravtsev/auth/internal/services/auth"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"google.golang.org/grpc"

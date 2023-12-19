@@ -1,4 +1,4 @@
-module local/gorm-example
+module github.com/vladkudravtsev/auth
 
 go 1.21.5
 
