@@ -24,7 +24,7 @@ type App struct {
 func New(authService auth.Service, log *slog.Logger, cfg *config.HTTPServer) *App {
 	router := gin.Default()
 
-	httpServer := authhttp.NewServer(router, authService, cfg)
+	httpServer := authhttp.NewServer(router, authService, cfg, log)
 
 	return &App{
 		httpServer: httpServer,
