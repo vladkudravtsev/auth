@@ -1,6 +1,7 @@
 package grpcapp
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net"
@@ -9,6 +10,7 @@ import (
 	authgrpc "github.com/vladkudravtsev/auth/internal/grpc"
 	"github.com/vladkudravtsev/auth/internal/services/auth"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -22,6 +24,10 @@ type App struct {
 }
 
 func New(authService auth.Service, log *slog.Logger, cfg *config.GRPCServer) *App {
+	loggingOpts := []logging.Option{
+		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
+	}
+
 	recoveryOptions := []recovery.Option{
 		recovery.WithRecoveryHandler(func(p any) (err error) {
 			log.Error("Recovered from panic", slog.Any("panic", p))
@@ -29,7 +35,8 @@ func New(authService auth.Service, log *slog.Logger, cfg *config.GRPCServer) *Ap
 		}),
 	}
 	gRPCServer := grpc.NewServer(
-		grpc.UnaryInterceptor(
+		grpc.ChainUnaryInterceptor(
+			logging.UnaryServerInterceptor(interceptorLogger(log), loggingOpts...),
 			recovery.UnaryServerInterceptor(recoveryOptions...),
 		),
 	)
@@ -78,4 +85,10 @@ func (a *App) Stop() {
 	a.gRPCServer.GracefulStop()
 
 	log.Info("grpc server stopped")
+}
+
+func interceptorLogger(l *slog.Logger) logging.Logger {
+	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
+		l.Log(ctx, slog.Level(lvl), msg, fields...)
+	})
 }
