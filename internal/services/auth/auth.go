@@ -3,7 +3,8 @@ package auth
 import (
 	"errors"
 	"local/gorm-example/internal/lib/jwt"
-	"local/gorm-example/internal/services/auth/models"
+	"local/gorm-example/internal/models"
+
 	"log/slog"
 	"time"
 

@@ -3,8 +3,8 @@ package grpcapp
 import (
 	"fmt"
 	"local/gorm-example/internal/config"
+	authgrpc "local/gorm-example/internal/grpc"
 	"local/gorm-example/internal/services/auth"
-	authgrpc "local/gorm-example/internal/services/auth/grpc"
 	"log/slog"
 	"net"
 
@@ -33,7 +33,7 @@ func New(authService auth.Service, log *slog.Logger, cfg *config.GRPCServer) *Ap
 		),
 	)
 
-	authgrpc.RegisterServer(gRPCServer, authService)
+	authgrpc.RegisterServer(gRPCServer, authService, log)
 
 	return &App{
 		gRPCServer: gRPCServer,

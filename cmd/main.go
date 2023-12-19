@@ -1,9 +1,9 @@
 package main
 
 import (
+	"local/gorm-example/internal/app"
 	"local/gorm-example/internal/config"
 	"local/gorm-example/internal/database"
-	"local/gorm-example/internal/services/auth/app"
 	"log"
 	"log/slog"
 	"os"
@@ -22,7 +22,6 @@ func main() {
 
 	authApp := app.New(db, log, cfg)
 
-	// TODO run both servers
 	go authApp.HTTPServer.MustRun()
 	go authApp.GRPCServer.MustRun()
 

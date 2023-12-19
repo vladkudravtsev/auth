@@ -4,10 +4,12 @@ package auth;
 
 option go_package = "local.auth.v1;authv1";
 
+import "validate/validate.proto";
+
 message LoginRequest {
-  uint32 app_id = 1 ;
-  string email = 2;
-  string password = 3;
+  uint32 app_id = 1 [(validate.rules).uint32 = {gte: 1}];
+  string email = 2 [(validate.rules).string = {email: true}];
+  string password = 3 [(validate.rules).string = {min_len: 5}];
 }
 
 message LoginResponse {
@@ -15,9 +17,9 @@ message LoginResponse {
 }
 
 message RegisterRequest {
-  string name = 1;
-  string email = 2;
-  string password = 3;
+  string name = 1 [(validate.rules).string = {min_len: 2}];
+  string email = 2 [(validate.rules).string = {email: true}];
+  string password = 3 [(validate.rules).string = {min_len: 5}];
 }
 
 message RegisterResponse {
