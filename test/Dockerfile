@@ -9,5 +9,6 @@ RUN go mod download
 COPY api ./api
 COPY cmd ./cmd
 COPY internal ./internal
+COPY migrations ./migrations
 
-CMD CGO_ENABLED=0 go test ./...
+CMD CGO_ENABLED=0 go run cmd/migrator/main.go && go test ./...

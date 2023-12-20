@@ -16,3 +16,5 @@ test:
 	go test ./...
 run:
 	go run cmd/main.go -config auth.env
+migrate:
+	go run cmd/migrator/main.go -config auth.env

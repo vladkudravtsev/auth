@@ -53,7 +53,6 @@ func (s *Suite) SetupSuite() {
 		panic("failed to connect database")
 	}
 	s.db = db
-	db.AutoMigrate(&models.User{}, &models.App{})
 
 	lis := bufconn.Listen(bufSize)
 	baseServer := grpc.NewServer()

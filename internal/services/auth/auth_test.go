@@ -41,7 +41,6 @@ func (s *Suite) SetupSuite() {
 		panic("failed to connect database")
 	}
 	s.db = db
-	db.AutoMigrate(&models.User{}, &models.App{})
 
 	authService := NewService(db, log, cfg.Auth.TokenTTL)
 	s.auth = authService

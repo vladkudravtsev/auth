@@ -16,7 +16,7 @@ type Config struct {
 	HTTPServer HTTPServer
 	GRPCServer GRPCServer
 	Auth       Auth
-	AppSecret  string `env:"APP_SECRET" env-required:"true"`
+	Migrator   Migrator
 }
 
 type Database struct {
@@ -38,6 +38,10 @@ type GRPCServer struct {
 
 type Auth struct {
 	TokenTTL time.Duration `env:"AUTH_TOKEN_TTL" env-default:"1m"`
+}
+
+type Migrator struct {
+	DatabaseURL string `env:"MIGRATOR_DB_URL" env-required:"true"`
 }
 
 func MustLoad() *Config {

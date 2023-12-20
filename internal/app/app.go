@@ -6,7 +6,6 @@ import (
 	grpcapp "github.com/vladkudravtsev/auth/internal/app/grpc"
 	httpapp "github.com/vladkudravtsev/auth/internal/app/http"
 	"github.com/vladkudravtsev/auth/internal/config"
-	"github.com/vladkudravtsev/auth/internal/models"
 	"github.com/vladkudravtsev/auth/internal/services/auth"
 
 	"gorm.io/gorm"
@@ -18,8 +17,6 @@ type App struct {
 }
 
 func New(db *gorm.DB, log *slog.Logger, cfg *config.Config) *App {
-	db.AutoMigrate(&models.User{}, &models.App{})
-
 	authService := auth.NewService(db, log, cfg.Auth.TokenTTL)
 
 	httpApp := httpapp.New(authService, log, &cfg.HTTPServer)

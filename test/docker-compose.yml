@@ -11,6 +11,7 @@ services:
       DB_USER: postgres
       DB_PASSWORD: password
       DB_NAME: "postgres"
+      MIGRATOR_DB_URL: postgres://postgres:password@postgres:5432/postgres?sslmode=disable
       ENV: "test"
       APP_SECRET: "cctVVcgnZj6gS1LhnZ1CaUvnaWb74yrtytrhfhg"
       AUTH_TOKEN_TTL: "5m"
